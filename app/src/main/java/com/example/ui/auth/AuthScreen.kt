@@ -129,6 +129,7 @@ fun AuthScreen(onAuthSuccess: () -> Unit) {
                         scope = coroutineScope,
                         onAuthCancelled = {
                             isLoading = false
+                            errorMessage = "Inicio de sesión cancelado o no completado. Si el problema persiste, verifica que la firma SHA-1 esté registrada en Firebase."
                         }
                     )
                 },
@@ -211,7 +212,7 @@ fun onGoogleSignInClicked(
     val clientId = try {
         context.getString(R.string.default_web_client_id)
     } catch (e: Exception) {
-        onAuthError("Google Sign-In configuration missing: default_web_client_id not found")
+        onAuthError("Error de configuración: no se encontró default_web_client_id")
         return
     }
 
@@ -228,14 +229,22 @@ fun onGoogleSignInClicked(
                 Firebase.auth.signInWithCredential(authCredential).await()
                 onAuthSuccess()
             } else {
-                onAuthError("Unexpected credential type")
+                onAuthError("Tipo de credencial no soportado")
             }
         } catch (e: GetCredentialCancellationException) {
             Log.w("Auth", "Google Sign-In flow cancelled or dismissed: ${e.message}", e)
             onAuthCancelled()
         } catch (e: Exception) {
             Log.e("Auth", "Google Sign-In failed", e)
-            onAuthError(e.localizedMessage ?: "Sign in failed")
+            val rawMsg = e.localizedMessage ?: e.message ?: "Error al autenticar"
+            val userMsg = when {
+                rawMsg.contains("10", ignoreCase = true) || rawMsg.contains("DEVELOPER_ERROR", ignoreCase = true) ->
+                    "Error 10 (DEVELOPER_ERROR): La huella SHA-1 del APK no está registrada en Firebase Console para este proyecto."
+                rawMsg.contains("12500", ignoreCase = true) ->
+                    "Error 12500 (Google Play Services): Verifica que la cuenta de Google esté activa en el dispositivo."
+                else -> "Error de inicio de sesión: $rawMsg"
+            }
+            onAuthError(userMsg)
         }
     }
 }

@@ -48,32 +48,45 @@ jobs:
             cat << 'EOF' > app/google-services.json
           {
             "project_info": {
-              "project_number": "123456789012",
-              "project_id": "dummy-project",
-              "storage_bucket": "dummy-project.appspot.com"
+              "project_number": "275841920371",
+              "project_id": "gen-lang-client-0803069515",
+              "storage_bucket": "gen-lang-client-0803069515.firebasestorage.app"
             },
             "client": [
               {
                 "client_info": {
-                  "mobilesdk_app_id": "1:123456789012:android:abcdef",
+                  "mobilesdk_app_id": "1:275841920371:android:e07e299dc7a3fc9286a906",
                   "android_client_info": {
                     "package_name": "com.aistudio.droidporthub.xyzab"
                   }
                 },
                 "oauth_client": [
                   {
-                    "client_id": "dummy-client-id.apps.googleusercontent.com",
+                    "client_id": "275841920371-o164c3h84e7h85br249mmfi7birmsid3.apps.googleusercontent.com",
+                    "client_type": 1,
+                    "android_info": {
+                      "package_name": "com.aistudio.droidporthub.xyzab",
+                      "certificate_hash": "bccd1c6655c18a8368f7bb60fa52915572b899f1"
+                    }
+                  },
+                  {
+                    "client_id": "275841920371-2b4b7ddisndaho80vveiebp9vpkci0uc.apps.googleusercontent.com",
                     "client_type": 3
                   }
                 ],
                 "api_key": [
                   {
-                    "current_key": "dummy-api-key"
+                    "current_key": "AIzaSyAmBP3Njp7QWb2J_v6P_UZc3DpaWlzD2Bw"
                   }
                 ],
                 "services": {
                   "appinvite_service": {
-                    "other_platform_oauth_client": []
+                    "other_platform_oauth_client": [
+                      {
+                        "client_id": "275841920371-2b4b7ddisndaho80vveiebp9vpkci0uc.apps.googleusercontent.com",
+                        "client_type": 3
+                      }
+                    ]
                   }
                 }
               }
