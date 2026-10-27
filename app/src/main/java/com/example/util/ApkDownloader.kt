@@ -18,11 +18,24 @@ import java.util.concurrent.TimeUnit
 
 object ApkDownloader {
 
+    private fun getApkDirectory(context: Context): File {
+        val baseDir = context.getExternalFilesDir("apks") ?: File(context.filesDir, "apks")
+        if (!baseDir.exists()) {
+            baseDir.mkdirs()
+        }
+        return baseDir
+    }
+
     fun getDownloadedApkFile(context: Context, port: Port): File? {
-        val downloadsDir = File(context.cacheDir, "apks")
+        val downloadsDir = getApkDirectory(context)
         val cleanName = port.name.ifBlank { "game_port" }.replace(Regex("[^a-zA-Z0-9_]"), "_")
         val file = File(downloadsDir, "${cleanName}.apk")
-        return if (file.exists() && file.length() > 1024L) file else null
+        if (file.exists() && file.length() > 1024L) {
+            return file
+        }
+        // Fallback check in cache dir for backward compatibility
+        val cacheFile = File(File(context.cacheDir, "apks"), "${cleanName}.apk")
+        return if (cacheFile.exists() && cacheFile.length() > 1024L) cacheFile else null
     }
 
     fun isApkDownloaded(context: Context, port: Port): Boolean {
@@ -71,7 +84,7 @@ object ApkDownloader {
             }
 
             val totalBytes = body.contentLength()
-            val downloadsDir = File(context.cacheDir, "apks").apply { mkdirs() }
+            val downloadsDir = getApkDirectory(context)
             val cleanName = port.name.ifBlank { "game_port" }.replace(Regex("[^a-zA-Z0-9_]"), "_")
             val destinationFile = File(downloadsDir, "${cleanName}.apk")
             if (destinationFile.exists()) {
@@ -115,6 +128,11 @@ object ApkDownloader {
 
     fun installApk(context: Context, apkFile: File) {
         try {
+            if (!apkFile.exists() || apkFile.length() < 1024L) {
+                Log.e("ApkDownloader", "Invalid or non-existent APK file")
+                return
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!context.packageManager.canRequestPackageInstalls()) {
                     val settingsIntent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
@@ -122,6 +140,7 @@ object ApkDownloader {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     }
                     context.startActivity(settingsIntent)
+                    return
                 }
             }
 
