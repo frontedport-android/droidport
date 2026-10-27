@@ -17,6 +17,9 @@ data class Port(
     val hasUpdate: Boolean = false,    // Computed
     val apkDownloadUrl: String = "",   // Direct APK download link from GitHub release
     val romUrl: String = "",           // Direct URL for game ROM / data files
+    val userId: String = "",           // Creator UID
+    val userEmail: String = "",        // Creator email
+    val isAdminPort: Boolean = false,  // True if created by an admin (publicly visible to all users)
     @ServerTimestamp val createdAt: Timestamp? = null,
     @ServerTimestamp val updatedAt: Timestamp? = null
 ) {
@@ -33,6 +36,9 @@ data class Port(
             "hasUpdate" to hasUpdate,
             "apkDownloadUrl" to apkDownloadUrl,
             "romUrl" to romUrl,
+            "userId" to userId,
+            "userEmail" to userEmail,
+            "isAdminPort" to isAdminPort,
             "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
         )
     }

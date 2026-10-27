@@ -7,6 +7,12 @@ import com.example.data.GitHubApiService
 import com.example.data.PortRepository
 import com.example.model.Port
 import com.example.model.Review
+import com.example.util.AdminConfig
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -39,12 +45,19 @@ sealed interface DownloadState {
 class PortViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = PortRepository(application)
 
-    val uiState: StateFlow<PortsUiState> = repository.observePorts()
-        .map<List<Port>, PortsUiState> { ports ->
-            PortsUiState.Success(ports)
-        }
-        .catch { e ->
-            emit(PortsUiState.Error(e.localizedMessage ?: "Failed to load ports"))
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(Firebase.auth.currentUser)
+    val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<PortsUiState> = _currentUser
+        .flatMapLatest { user ->
+            repository.observePorts(user?.email, user?.uid)
+                .map<List<Port>, PortsUiState> { ports ->
+                    PortsUiState.Success(ports)
+                }
+                .catch { e ->
+                    emit(PortsUiState.Error(e.localizedMessage ?: "Failed to load ports"))
+                }
         }
         .stateIn(
             scope = viewModelScope,
@@ -61,6 +74,23 @@ class PortViewModel(application: Application) : AndroidViewModel(application) {
     private val _toastMessage = MutableSharedFlow<String>()
     val toastMessage: SharedFlow<String> = _toastMessage.asSharedFlow()
 
+    init {
+        // Automatically sync any offline or pending local ports on startup if user is logged in
+        Firebase.auth.currentUser?.let { onUserSignedIn(it) }
+    }
+
+    fun onUserSignedIn(user: FirebaseUser?) {
+        _currentUser.value = user
+        if (user != null) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val syncedCount = repository.syncLocalAndLegacyPorts(user, getApplication())
+                if (syncedCount > 0) {
+                    _toastMessage.emit("Sincronizados $syncedCount port(s) a tu cuenta de Firebase.")
+                }
+            }
+        }
+    }
+
     fun dismissDownloadState() {
         _downloadState.value = DownloadState.Idle
     }
@@ -68,10 +98,17 @@ class PortViewModel(application: Application) : AndroidViewModel(application) {
     fun addPort(port: Port) {
         viewModelScope.launch {
             try {
-                repository.addPort(port)
-                _toastMessage.emit("Port added successfully")
+                val user = _currentUser.value
+                val isAdmin = AdminConfig.isAdmin(user?.email)
+                val portToSave = port.copy(
+                    userId = user?.uid ?: "",
+                    userEmail = user?.email ?: "",
+                    isAdminPort = isAdmin
+                )
+                repository.addPort(portToSave, getApplication())
+                _toastMessage.emit("Port agregado exitosamente")
             } catch (e: Exception) {
-                _toastMessage.emit("Error adding port: ${e.localizedMessage}")
+                _toastMessage.emit("Error agregando port: ${e.localizedMessage}")
             }
         }
     }
@@ -79,10 +116,35 @@ class PortViewModel(application: Application) : AndroidViewModel(application) {
     fun updatePort(port: Port) {
         viewModelScope.launch {
             try {
-                repository.updatePort(port)
-                _toastMessage.emit("Port updated successfully")
+                val user = _currentUser.value
+                val isAdmin = AdminConfig.isAdmin(user?.email)
+                val isOwner = port.userId.isBlank() || port.userId == user?.uid
+                if (!isAdmin && !isOwner) {
+                    _toastMessage.emit("Solo los administradores pueden editar este port.")
+                    return@launch
+                }
+                repository.updatePort(port, getApplication())
+                _toastMessage.emit("Port actualizado exitosamente")
             } catch (e: Exception) {
-                _toastMessage.emit("Error updating port: ${e.localizedMessage}")
+                _toastMessage.emit("Error actualizando port: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    fun deletePort(port: Port) {
+        viewModelScope.launch {
+            try {
+                val user = _currentUser.value
+                val isAdmin = AdminConfig.isAdmin(user?.email)
+                val isOwner = port.userId.isBlank() || port.userId == user?.uid
+                if (!isAdmin && !isOwner) {
+                    _toastMessage.emit("Solo los administradores pueden eliminar este port.")
+                    return@launch
+                }
+                repository.deletePort(port.id, getApplication())
+                _toastMessage.emit("Port eliminado")
+            } catch (e: Exception) {
+                _toastMessage.emit("Error eliminando port: ${e.localizedMessage}")
             }
         }
     }
@@ -90,10 +152,10 @@ class PortViewModel(application: Application) : AndroidViewModel(application) {
     fun deletePort(portId: String) {
         viewModelScope.launch {
             try {
-                repository.deletePort(portId)
-                _toastMessage.emit("Port deleted")
+                repository.deletePort(portId, getApplication())
+                _toastMessage.emit("Port eliminado")
             } catch (e: Exception) {
-                _toastMessage.emit("Error deleting port: ${e.localizedMessage}")
+                _toastMessage.emit("Error eliminando port: ${e.localizedMessage}")
             }
         }
     }
@@ -157,7 +219,7 @@ class PortViewModel(application: Application) : AndroidViewModel(application) {
                                 hasUpdate = hasUpdate,
                                 apkDownloadUrl = apkUrl
                             )
-                            repository.updatePort(updatedPort)
+                            updatePort(updatedPort)
                             if (hasUpdate) updatedCount++
                         }
                     } catch (e: Exception) {

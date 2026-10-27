@@ -42,5 +42,10 @@
     <string name="download_complete">Download complete!</string>
     <string name="real_game_title">Real Game Title (Commercial Name)</string>
     <string name="real_game_detected">Detected Real Game</string>
-    <string name="default_web_client_id" translatable="false">AI_STUDIO_DEFAULT_WEB_CLIENT_ID</string>
+    <string name="default_web_client_id" translatable="false">275841920371-2b4b7ddisndaho80vveiebp9vpkci0uc.apps.googleusercontent.com</string>
+    <string name="share">Compartir</string>
+    <string name="admin_badge">ADMIN</string>
+    <string name="private_badge">Privado</string>
+    <string name="sign_out">Cerrar sesión</string>
+    <string name="confirm_sign_out">¿Deseas cerrar tu sesión actual?</string>
 </resources>

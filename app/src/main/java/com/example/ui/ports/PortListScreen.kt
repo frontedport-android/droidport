@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,8 +38,11 @@ import coil.compose.AsyncImage
 import com.example.R
 import com.example.model.Port
 import com.example.ui.components.GamerButton
+import com.example.util.AdminConfig
 import com.example.util.AppLauncher
+import com.example.util.PortShareHelper
 import com.example.util.RomStorageManager
+import com.google.firebase.auth.FirebaseUser
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import kotlinx.coroutines.flow.collectLatest
@@ -47,7 +51,9 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PortListScreen(
-    viewModel: PortViewModel
+    viewModel: PortViewModel,
+    currentUser: FirebaseUser? = null,
+    onSignOut: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -57,12 +63,15 @@ fun PortListScreen(
     val isCheckingUpdates by viewModel.isCheckingUpdates.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var showSignOutDialog by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
     var editingPort by remember { mutableStateOf<Port?>(null) }
     var reviewingPort by remember { mutableStateOf<Port?>(null) }
     var searchQuery by remember { mutableStateOf("") }
-    var selectedTab by remember { mutableIntStateOf(0) } // 0 = All Ports, 1 = Updates
+    var selectedTab by remember { mutableIntStateOf(0) } // 0 = All Ports, 1 = Descargados
     var hasCheckedUpdatesOnStart by remember { mutableStateOf(false) }
+
+    val isAdmin = AdminConfig.isAdmin(currentUser?.email)
 
     var pendingRomPort by remember { mutableStateOf<Port?>(null) }
     var showRomPromptForPort by remember { mutableStateOf<Port?>(null) }
@@ -176,6 +185,34 @@ fun PortListScreen(
                         } else {
                             Icon(Icons.Default.Refresh, contentDescription = "Check Updates", tint = MaterialTheme.colorScheme.primary)
                         }
+                    }
+
+                    if (isAdmin) {
+                        Surface(
+                            color = Color(0xFFFFB300).copy(alpha = 0.2f),
+                            border = BorderStroke(1.dp, Color(0xFFFFB300)),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.padding(end = 4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(Icons.Default.Shield, contentDescription = null, tint = Color(0xFFFFB300), modifier = Modifier.size(14.dp))
+                                Text("ADMIN", color = Color(0xFFFFB300), fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                            }
+                        }
+                    }
+
+                    IconButton(
+                        onClick = { showSignOutDialog = true }
+                    ) {
+                        Icon(
+                            Icons.Default.AccountCircle,
+                            contentDescription = "Cuenta de usuario: ${currentUser?.email.orEmpty()}",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -354,10 +391,11 @@ fun PortListScreen(
                                 PortCard(
                                     port = port,
                                     viewModel = viewModel,
+                                    currentUser = currentUser,
                                     onLaunch = { AppLauncher.launchApp(context, port.packageName) },
                                     onSettings = { AppLauncher.openAppSettings(context, port.packageName) },
                                     onEdit = { editingPort = port },
-                                    onDelete = { viewModel.deletePort(port.id) },
+                                    onDelete = { viewModel.deletePort(port) },
                                     onOpenReviews = { reviewingPort = port },
                                     onDownloadRom = { triggerRomDownload(port) }
                                 )
@@ -367,6 +405,41 @@ fun PortListScreen(
                 }
             }
         }
+    }
+
+    if (showSignOutDialog) {
+        AlertDialog(
+            onDismissRequest = { showSignOutDialog = false },
+            title = { Text(context.getString(R.string.sign_out), fontWeight = FontWeight.Bold) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(context.getString(R.string.confirm_sign_out))
+                    if (!currentUser?.email.isNullOrBlank()) {
+                        Text(
+                            text = currentUser.email!!,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showSignOutDialog = false
+                        onSignOut()
+                    }
+                ) {
+                    Text(context.getString(R.string.sign_out), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSignOutDialog = false }) {
+                    Text(context.getString(R.string.cancel))
+                }
+            },
+            shape = RoundedCornerShape(18.dp)
+        )
     }
 
     if (showAddDialog) {
@@ -564,6 +637,7 @@ fun PortListScreen(
 fun PortCard(
     port: Port,
     viewModel: PortViewModel,
+    currentUser: FirebaseUser? = null,
     onLaunch: () -> Unit,
     onSettings: () -> Unit,
     onEdit: () -> Unit,
@@ -573,6 +647,10 @@ fun PortCard(
 ) {
     var expandedMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val isAdmin = AdminConfig.isAdmin(currentUser?.email)
+    val isOwner = port.userId.isBlank() || port.userId == currentUser?.uid
+    val canEditOrDelete = isAdmin || isOwner
 
     val isInstalled by androidx.compose.runtime.produceState(initialValue = false, key1 = port.packageName) {
         if (port.packageName.isNotBlank()) {
@@ -795,17 +873,28 @@ fun PortCard(
                             onDismissRequest = { expandedMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text(context.getString(R.string.edit), fontWeight = FontWeight.SemiBold) },
-                                onClick = { expandedMenu = false; onEdit() },
-                                leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                                text = { Text(context.getString(R.string.share), fontWeight = FontWeight.SemiBold) },
+                                onClick = {
+                                    expandedMenu = false
+                                    PortShareHelper.sharePort(context, port)
+                                },
+                                leadingIcon = { Icon(Icons.Default.Share, contentDescription = "Compartir") },
                                 modifier = Modifier.heightIn(min = 44.dp)
                             )
-                            DropdownMenuItem(
-                                text = { Text(context.getString(R.string.delete), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.SemiBold) },
-                                onClick = { expandedMenu = false; onDelete() },
-                                leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
-                                modifier = Modifier.heightIn(min = 44.dp)
-                            )
+                            if (canEditOrDelete) {
+                                DropdownMenuItem(
+                                    text = { Text(context.getString(R.string.edit), fontWeight = FontWeight.SemiBold) },
+                                    onClick = { expandedMenu = false; onEdit() },
+                                    leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                                    modifier = Modifier.heightIn(min = 44.dp)
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(context.getString(R.string.delete), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.SemiBold) },
+                                    onClick = { expandedMenu = false; onDelete() },
+                                    leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+                                    modifier = Modifier.heightIn(min = 44.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -839,6 +928,36 @@ fun PortCard(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
+                    }
+                }
+
+                // Bottom-Right Private Badge (shown if port is private to current user)
+                if (!port.isAdminPort && port.userId.isNotBlank()) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(6.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color.Black.copy(alpha = 0.75f))
+                            .padding(horizontal = 6.dp, vertical = 3.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(3.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Lock,
+                                contentDescription = "Port privado",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Text(
+                                text = context.getString(R.string.private_badge),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
                     }
                 }
             }

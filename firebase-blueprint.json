@@ -11,6 +11,11 @@
         "installedVersion": { "type": "string", "description": "Currently installed version tag" },
         "iconUrl": { "type": "string", "description": "Cover art or icon URL" },
         "notes": { "type": "string", "description": "User notes or build instructions" },
+        "realGameTitle": { "type": "string", "description": "Commercial game title" },
+        "romUrl": { "type": "string", "description": "ROM or data file download URL" },
+        "userId": { "type": "string", "description": "Creator user UID" },
+        "userEmail": { "type": "string", "description": "Creator user email" },
+        "isAdminPort": { "type": "boolean", "description": "Whether port is uploaded by admin and public to all users" },
         "createdAt": { "type": "timestamp", "description": "Creation timestamp" },
         "updatedAt": { "type": "timestamp", "description": "Last update timestamp" }
       }
