@@ -1,0 +1,19 @@
+{
+  "entities": {
+    "Port": {
+      "collectionName": "ports",
+      "description": "Shared Android game ports uploaded by admins, visible to all authenticated users",
+      "fields": {
+        "id": { "type": "string", "description": "Document ID" },
+        "name": { "type": "string", "description": "Game port display name" },
+        "repoUrl": { "type": "string", "description": "GitHub repository e.g. owner/repo" },
+        "packageName": { "type": "string", "description": "Android package name for launching" },
+        "installedVersion": { "type": "string", "description": "Currently installed version tag" },
+        "iconUrl": { "type": "string", "description": "Cover art or icon URL" },
+        "notes": { "type": "string", "description": "User notes or build instructions" },
+        "createdAt": { "type": "timestamp", "description": "Creation timestamp" },
+        "updatedAt": { "type": "timestamp", "description": "Last update timestamp" }
+      }
+    }
+  }
+}
