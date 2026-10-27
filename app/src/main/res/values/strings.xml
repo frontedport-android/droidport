@@ -42,4 +42,5 @@
     <string name="download_complete">Download complete!</string>
     <string name="real_game_title">Real Game Title (Commercial Name)</string>
     <string name="real_game_detected">Detected Real Game</string>
+    <string name="default_web_client_id" translatable="false">AI_STUDIO_DEFAULT_WEB_CLIENT_ID</string>
 </resources>

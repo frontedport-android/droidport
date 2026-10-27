@@ -33,6 +33,56 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x gradlew
 
+      - name: Restore Debug Keystore
+        run: |
+          if [ -f "debug.keystore.base64" ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          else
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+      - name: Ensure google-services.json exists
+        run: |
+          if [ ! -f "app/google-services.json" ]; then
+            mkdir -p app
+            cat << 'EOF' > app/google-services.json
+          {
+            "project_info": {
+              "project_number": "123456789012",
+              "project_id": "dummy-project",
+              "storage_bucket": "dummy-project.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789012:android:abcdef",
+                  "android_client_info": {
+                    "package_name": "com.aistudio.droidporthub.xyzab"
+                  }
+                },
+                "oauth_client": [
+                  {
+                    "client_id": "dummy-client-id.apps.googleusercontent.com",
+                    "client_type": 3
+                  }
+                ],
+                "api_key": [
+                  {
+                    "current_key": "dummy-api-key"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+          fi
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon
 
