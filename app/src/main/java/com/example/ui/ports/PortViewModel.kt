@@ -213,7 +213,7 @@ class PortViewModel(application: Application) : AndroidViewModel(application) {
                         val latestTag = resolved.tagName
                         val apkUrl = resolved.apkUrl ?: port.apkDownloadUrl
                         if (latestTag.isNotBlank()) {
-                            val hasUpdate = latestTag != port.installedVersion
+                            val hasUpdate = com.example.util.VersionComparator.isUpdateAvailable(latestTag, port.installedVersion)
                             val updatedPort = port.copy(
                                 latestVersion = latestTag,
                                 hasUpdate = hasUpdate,

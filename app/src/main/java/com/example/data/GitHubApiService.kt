@@ -65,8 +65,21 @@ interface GitHubApi {
 }
 
 object GitHubApiService {
+    private val okHttpClient = okhttp3.OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("User-Agent", "DroidPortHub/1.0 (Android)")
+                .header("Accept", "application/vnd.github+json")
+                .build()
+            chain.proceed(request)
+        }
+        .connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+        .build()
+
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.github.com/")
+        .client(okHttpClient)
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
 

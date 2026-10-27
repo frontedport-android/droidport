@@ -663,12 +663,13 @@ fun PortCard(
     }
 
     val isUpdateAvailable = remember(port.hasUpdate, port.latestVersion, port.installedVersion) {
-        port.hasUpdate || (
-            port.latestVersion.isNotBlank() &&
-            port.installedVersion.isNotBlank() &&
-            !port.latestVersion.equals(port.installedVersion, ignoreCase = true)
-        )
+        port.hasUpdate || com.example.util.VersionComparator.isUpdateAvailable(port.latestVersion, port.installedVersion)
     }
+
+    val downloadedApkFile: java.io.File? = remember(port.id, port.name) {
+        com.example.util.ApkDownloader.getDownloadedApkFile(context, port)
+    }
+    val isApkDownloaded = downloadedApkFile != null
 
     val reviews by viewModel.observeReviews(port.id).collectAsStateWithLifecycle(initialValue = emptyList())
     val calculatedRating = remember(reviews, port.id) {
@@ -931,35 +932,6 @@ fun PortCard(
                     }
                 }
 
-                // Bottom-Right Private Badge (shown if port is private to current user)
-                if (!port.isAdminPort && port.userId.isNotBlank()) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(6.dp)
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color.Black.copy(alpha = 0.75f))
-                            .padding(horizontal = 6.dp, vertical = 3.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(3.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Lock,
-                                contentDescription = "Port privado",
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(12.dp)
-                            )
-                            Text(
-                                text = context.getString(R.string.private_badge),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.secondary
-                            )
-                        }
-                    }
-                }
             }
 
             // BOTTOM INFO & ACTION BUTTONS (compact vertical arrangement to eliminate empty gap)
@@ -1000,7 +972,62 @@ fun PortCard(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isUpdateAvailable) {
+                    if (isApkDownloaded && downloadedApkFile != null) {
+                        // APK is downloaded locally on disk!
+                        if (!isInstalled) {
+                            // APK downloaded, but not installed on phone yet -> Direct "Instalar APK" button
+                            GamerButton(
+                                text = "Instalar APK",
+                                onClick = { com.example.util.ApkDownloader.installApk(context, downloadedApkFile) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(38.dp),
+                                isPrimary = true
+                            )
+                        } else if (isUpdateAvailable) {
+                            // Installed, but update APK already downloaded -> "Instalar Actualización" + "LANZAR"
+                            Button(
+                                onClick = { com.example.util.ApkDownloader.installApk(context, downloadedApkFile) },
+                                modifier = Modifier
+                                    .weight(1.1f)
+                                    .height(38.dp),
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp)
+                            ) {
+                                Icon(Icons.Default.SystemUpdate, contentDescription = null, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = "Instalar Actualización",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+
+                            GamerButton(
+                                text = context.getString(R.string.btn_launch),
+                                onClick = onLaunch,
+                                modifier = Modifier
+                                    .weight(0.9f)
+                                    .height(38.dp),
+                                isPrimary = true
+                            )
+                        } else {
+                            // Installed and up-to-date -> "LANZAR"
+                            GamerButton(
+                                text = context.getString(R.string.btn_launch),
+                                onClick = onLaunch,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(38.dp),
+                                isPrimary = true
+                            )
+                        }
+                    } else if (isUpdateAvailable) {
+                        // APK not on disk, but update available on GitHub -> "Actualizar" + "LANZAR"
                         Button(
                             onClick = { viewModel.downloadAndInstallPort(port) },
                             modifier = Modifier
@@ -1033,6 +1060,7 @@ fun PortCard(
                             )
                         }
                     } else if (!isInstalled) {
+                        // Not installed and no APK on disk -> "Instalar" / "Descargar"
                         GamerButton(
                             text = context.getString(R.string.btn_install),
                             onClick = { viewModel.downloadAndInstallPort(port) },
@@ -1042,6 +1070,7 @@ fun PortCard(
                             isPrimary = false
                         )
                     } else {
+                        // Installed and up-to-date -> "LANZAR"
                         GamerButton(
                             text = context.getString(R.string.btn_launch),
                             onClick = onLaunch,

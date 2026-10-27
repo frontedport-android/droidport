@@ -18,6 +18,21 @@ import java.util.concurrent.TimeUnit
 
 object ApkDownloader {
 
+    fun getDownloadedApkFile(context: Context, port: Port): File? {
+        val downloadsDir = File(context.cacheDir, "apks")
+        val cleanName = port.name.ifBlank { "game_port" }.replace(Regex("[^a-zA-Z0-9_]"), "_")
+        val file = File(downloadsDir, "${cleanName}.apk")
+        return if (file.exists() && file.length() > 1024L) file else null
+    }
+
+    fun isApkDownloaded(context: Context, port: Port): Boolean {
+        return getDownloadedApkFile(context, port) != null
+    }
+
+    fun deleteDownloadedApk(context: Context, port: Port) {
+        getDownloadedApkFile(context, port)?.delete()
+    }
+
     private val client = OkHttpClient.Builder()
         .followRedirects(true)
         .followSslRedirects(true)

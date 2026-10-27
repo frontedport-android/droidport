@@ -121,6 +121,16 @@ object GitHubReleaseResolver {
         return null
     }
 
+    private fun extractTagFromUrl(url: String): String? {
+        val regex = Regex("""/releases/(?:download|tag)/([^/"'\s?#]+)""")
+        val match = regex.find(url)
+        if (match != null) {
+            val tag = match.groupValues[1]
+            if (tag.isNotBlank() && !tag.equals("latest", ignoreCase = true)) return tag
+        }
+        return null
+    }
+
     private fun scrapeGitHubReleasesPage(owner: String, repo: String): ResolvedReleaseInfo? {
         val urlsToTry = listOf(
             "https://github.com/$owner/$repo/releases/latest",
@@ -138,25 +148,38 @@ object GitHubReleaseResolver {
                 val response = httpClient.newCall(request).execute()
                 if (response.isSuccessful) {
                     val html = response.body?.string() ?: ""
+                    val finalUrl = response.request.url.toString()
+                    var tag = extractTagFromUrl(finalUrl) ?: ""
 
-                    // Match relative href: href="/owner/repo/releases/download/tag/app.apk"
+                    // Match relative href: href="/owner/repo/releases/download/v1.0.0/app.apk"
                     val relMatcher = hrefApkRegex.matcher(html)
                     if (relMatcher.find()) {
                         val path = relMatcher.group(1)
                         val fullUrl = "https://github.com$path"
-                        return ResolvedReleaseInfo("latest", fullUrl)
+                        if (tag.isBlank()) {
+                            tag = extractTagFromUrl(fullUrl) ?: ""
+                        }
+                        return ResolvedReleaseInfo(tag, fullUrl)
                     }
 
                     // Match full href
                     val fullMatcher = hrefFullApkRegex.matcher(html)
                     if (fullMatcher.find()) {
-                        return ResolvedReleaseInfo("latest", fullMatcher.group(1))
+                        val fullUrl = fullMatcher.group(1)
+                        if (tag.isBlank()) {
+                            tag = extractTagFromUrl(fullUrl) ?: ""
+                        }
+                        return ResolvedReleaseInfo(tag, fullUrl)
                     }
 
                     // Any general .apk link in HTML
                     val genMatcher = apkUrlRegex.matcher(html)
                     if (genMatcher.find()) {
-                        return ResolvedReleaseInfo("latest", genMatcher.group())
+                        val fullUrl = genMatcher.group()
+                        if (tag.isBlank()) {
+                            tag = extractTagFromUrl(fullUrl) ?: ""
+                        }
+                        return ResolvedReleaseInfo(tag, fullUrl)
                     }
                 }
             } catch (e: Exception) {
