@@ -1,5 +1,5 @@
 {
-  "updatedAt": 1794235276193,
+  "updatedAt": 1794236090264,
   "whatsappNumber": "5350000000",
   "channels": [
     {
@@ -1229,9 +1229,9 @@
   "vpnKeys": [],
   "pairings": [],
   "appUpdate": {
-    "latestVersionCode": 117,
-    "latestVersionName": "11.7",
-    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v11.7\/Cuba.TV.y.Radio.11.7.apk",
+    "latestVersionCode": 118,
+    "latestVersionName": "11.8",
+    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v11.8\/Cuba.TV.y.Radio.11.8.apk",
     "releaseNotes": "Nuevas mejoras y canales en vivo."
   },
   "pictaConfig": {
