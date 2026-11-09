@@ -1246,9 +1246,9 @@
     }
   ],
   "appUpdate": {
-    "latestVersionCode": 123,
-    "latestVersionName": "12.3",
-    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v12.3\/Cuba.TV.y.Radio.12.3.apk",
+    "latestVersionCode": 124,
+    "latestVersionName": "12.4",
+    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v12.4\/Cuba.TV.y.Radio.12.4.apk",
     "releaseNotes": "Nuevas mejoras y canales en vivo."
   },
   "pictaConfig": {
