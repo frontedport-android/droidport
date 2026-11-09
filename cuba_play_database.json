@@ -1,5 +1,5 @@
 {
-  "updatedAt": 1794243201585,
+  "updatedAt": 1794243255209,
   "whatsappNumber": "5350000000",
   "channels": [
     {
@@ -1235,6 +1235,14 @@
       "password": "",
       "role": "user",
       "createdAtMillis": 1794243201264
+    },
+    {
+      "code": "954777",
+      "status": "AUTHORIZED",
+      "username": "daniel92",
+      "password": "123456",
+      "role": "user",
+      "createdAtMillis": 1794243254903
     }
   ],
   "appUpdate": {
