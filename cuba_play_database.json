@@ -1,10 +1,16 @@
 {
-  "updatedAt": 1794188655472,
+  "updatedAt": 1794188681669,
   "whatsappNumber": "5350000000",
   "channels": [],
   "users": [],
   "vpnKeys": [],
   "pairings": [],
+  "appUpdate": {
+    "latestVersionCode": 115,
+    "latestVersionName": "11.5",
+    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v11.5\/Cuba.TV.y.Radio.11.5.apk",
+    "releaseNotes": "Nuevas mejoras y canales en vivo."
+  },
   "pictaConfig": {
     "username": "58708786",
     "password": "Jdnm\/921105",
