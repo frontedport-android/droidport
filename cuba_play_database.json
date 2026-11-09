@@ -1,5 +1,5 @@
 {
-  "updatedAt": 1794242993947,
+  "updatedAt": 1794243201585,
   "whatsappNumber": "5350000000",
   "channels": [
     {
@@ -1227,7 +1227,16 @@
   ],
   "users": [],
   "vpnKeys": [],
-  "pairings": [],
+  "pairings": [
+    {
+      "code": "606121",
+      "status": "PENDING",
+      "username": "",
+      "password": "",
+      "role": "user",
+      "createdAtMillis": 1794243201264
+    }
+  ],
   "appUpdate": {
     "latestVersionCode": 120,
     "latestVersionName": "12.0",
