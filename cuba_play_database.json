@@ -1238,7 +1238,16 @@
       "assignedVpnKeyName": ""
     }
   ],
-  "vpnKeys": [],
+  "vpnKeys": [
+    {
+      "id": "-221749959",
+      "name": "servidor 1",
+      "rawKey": "ss:\/\/Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNToxcUVRMG13VjBxZzZib3lLTmNBNUhr@152.206.139.47:30411\/?outline=1",
+      "maxUsers": 3,
+      "assignedUsernames": [],
+      "createdAtMillis": 1794249455050
+    }
+  ],
   "pairings": [
     {
       "code": "606121",
