@@ -1225,7 +1225,19 @@
       "posterUrl": "https:\/\/cdn.teveo.cu\/media\/live\/audio\/poster-SD-WtCTqZfrTpzyncUw.jpg"
     }
   ],
-  "users": [],
+  "users": [
+    {
+      "userId": "daniel",
+      "username": "daniel",
+      "password": "111111",
+      "role": "user",
+      "validUntilMillis": 1796841203636,
+      "isTrial": false,
+      "createdAtMillis": 1794249203636,
+      "assignedVpnKey": "",
+      "assignedVpnKeyName": ""
+    }
+  ],
   "vpnKeys": [],
   "pairings": [
     {
