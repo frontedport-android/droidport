@@ -1241,9 +1241,9 @@
   "vpnKeys": [],
   "pairings": [],
   "appUpdate": {
-    "latestVersionCode": 130,
-    "latestVersionName": "13.0",
-    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v13.0\/Cuba.TV.y.Radio.13.0.apk",
+    "latestVersionCode": 131,
+    "latestVersionName": "13.1",
+    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v13.1\/Cuba.TV.y.Radio.13.1.apk",
     "releaseNotes": "Actualización automática a la versión 12.7"
   },
   "pictaConfig": {
