@@ -1,5 +1,5 @@
 {
-  "updatedAt": 1794256925188,
+  "updatedAt": 1794323574969,
   "whatsappNumber": "5547991822685",
   "channels": [
     {
@@ -1227,50 +1227,24 @@
   ],
   "users": [
     {
-      "userId": "daniel",
-      "username": "daniel",
-      "password": "111111",
+      "userId": "trial_5ab59502808ccfcd",
+      "username": "trial_5ab59502808ccfcd",
+      "password": "",
       "role": "user",
-      "validUntilMillis": 1796841203636,
-      "isTrial": false,
-      "createdAtMillis": 1794249203636,
+      "validUntilMillis": 1794412586155,
+      "isTrial": true,
+      "createdAtMillis": 1794326186155,
       "assignedVpnKey": "",
       "assignedVpnKeyName": ""
     }
   ],
-  "vpnKeys": [
-    {
-      "id": "-221749959",
-      "name": "servidor 1",
-      "rawKey": "ss:\/\/Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNToxcUVRMG13VjBxZzZib3lLTmNBNUhr@152.206.139.47:30411\/?outline=1",
-      "maxUsers": 3,
-      "assignedUsernames": [],
-      "createdAtMillis": 1794249455050
-    }
-  ],
-  "pairings": [
-    {
-      "code": "606121",
-      "status": "PENDING",
-      "username": "",
-      "password": "",
-      "role": "user",
-      "createdAtMillis": 1794243201264
-    },
-    {
-      "code": "954777",
-      "status": "AUTHORIZED",
-      "username": "daniel92",
-      "password": "123456",
-      "role": "user",
-      "createdAtMillis": 1794243254903
-    }
-  ],
+  "vpnKeys": [],
+  "pairings": [],
   "appUpdate": {
     "latestVersionCode": 127,
     "latestVersionName": "12.7",
-    "updateUrl": "https:\/\/github.com\/frontedport-android\/droidport\/releases\/download\/v12.7\/Cuba.TV.y.Radio.12.7.apk",
-    "releaseNotes": "Nuevas mejoras y canales en vivo."
+    "updateUrl": "https:\/\/scintillating-froyo-051a2d.netlify.app\/app-release.apk",
+    "releaseNotes": "Actualización automática a la versión 12.7"
   },
   "pictaConfig": {
     "username": "jdnm",
