@@ -1,5 +1,5 @@
 {
-  "updatedAt": 1794337742281,
+  "updatedAt": 1794337969683,
   "whatsappNumber": "5547991822685",
   "channels": [
     {
@@ -12,7 +12,7 @@
       "accentColorHex": 4278355143,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "https:\/\/www.picta.cu\/medias\/cubavision-hd-vivo-c69crazp3jlk3qjl",
+      "backupUrl": "https:\/\/www.picta.cu\/medias\/cubavision-hd-vivo",
       "posterUrl": ""
     },
     {
@@ -25,7 +25,7 @@
       "accentColorHex": 4293870660,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "https:\/\/www.picta.cu\/medias\/telerebelde-hd-vivo-dtqk6p4onhcttizo",
+      "backupUrl": "https:\/\/www.picta.cu\/medias\/telerebelde-hd-vivo",
       "posterUrl": ""
     },
     {
@@ -38,7 +38,7 @@
       "accentColorHex": 4287323382,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "https:\/\/www.picta.cu\/medias\/multivision-vivo-2023-10-31-11-08-16-424201",
+      "backupUrl": "https:\/\/www.picta.cu\/medias\/multivision-vivo",
       "posterUrl": ""
     },
     {
@@ -51,7 +51,7 @@
       "accentColorHex": 4278556265,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "https:\/\/www.picta.cu\/medias\/canal-caribe-hd-vivo-szhzec7pc0tabqvh",
+      "backupUrl": "https:\/\/www.picta.cu\/medias\/canal-caribe-hd-vivo",
       "posterUrl": ""
     },
     {
@@ -64,59 +64,59 @@
       "accentColorHex": 4282090230,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "https:\/\/www.picta.cu\/medias\/cubavision-internacional-vivo-2018-07-18-16-32-30-415401",
+      "backupUrl": "https:\/\/www.picta.cu\/medias\/cubavision-internacional-vivo",
       "posterUrl": ""
     },
     {
       "id": "educativo",
       "name": "Canal Educativo",
       "description": "Didáctico y formativo con cursos, teleclases, historia y divulgación cultural.",
-      "url": "https:\/\/www.picta.cu\/medias\/canal-educativo-vivo-6xwoxm0gttvuu1hc",
+      "url": "https:\/\/www.picta.cu\/medias\/canal-educativo-vivo",
       "category": "Educación",
       "badge": "Educativo 1",
       "accentColorHex": 4294286859,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "",
+      "backupUrl": "https:\/\/teveo.cu\/live\/video\/canal-educativo\/embed?auto=true",
       "posterUrl": ""
     },
     {
       "id": "educativo2",
       "name": "Canal Educativo 2",
       "description": "Teleclases metodológicas, contenidos universitarios y apoyo escolar.",
-      "url": "https:\/\/www.picta.cu\/medias\/canal-educativo-2-vivo-wtegibs664tat5vd",
+      "url": "https:\/\/www.picta.cu\/medias\/canal-educativo-2-vivo",
       "category": "Educación",
       "badge": "Educativo 2",
       "accentColorHex": 4292441862,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "",
+      "backupUrl": "https:\/\/teveo.cu\/live\/video\/canal-educativo-2\/embed?auto=true",
       "posterUrl": ""
     },
     {
       "id": "clave",
       "name": "Canal Clave",
       "description": "El canal de la música cubana: conciertos, festivales, trova, jazz y videoclips.",
-      "url": "https:\/\/www.picta.cu\/medias\/canal-clave-vivo-ow59zgrlzg2nsfxi",
+      "url": "https:\/\/www.picta.cu\/medias\/canal-clave-vivo",
       "category": "Música",
       "badge": "Música",
       "accentColorHex": 4293675161,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "",
+      "backupUrl": "https:\/\/teveo.cu\/live\/video\/canal-clave\/embed?auto=true",
       "posterUrl": ""
     },
     {
       "id": "canalhabana",
       "name": "Canal Habana",
       "description": "Televisión de la capital con la revista Hola Habana, noticias y cultura citadina.",
-      "url": "https:\/\/www.picta.cu\/medias\/canal-habana-vivo-nwl2hvdsakt03pww",
+      "url": "https:\/\/www.picta.cu\/medias\/canal-habana-vivo",
       "category": "Capital",
       "badge": "La Habana",
       "accentColorHex": 4279548070,
       "isCustom": false,
       "isFavorite": false,
-      "backupUrl": "",
+      "backupUrl": "https:\/\/teveo.cu\/live\/video\/canal-habana\/embed?auto=true",
       "posterUrl": ""
     },
     {
